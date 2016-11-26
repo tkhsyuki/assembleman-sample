@@ -16,16 +16,19 @@ class Material:  SKSpriteNode{
     }
     
     var timer = Timer()
-    //フレームサイズ長いので簡略
-    let w = GameScene().getwidth()
-    let h = GameScene().getheight()
     
+    //マテリアルのズレ保持
     static var rightn = CGFloat(0.0)
     static var leftn = CGFloat(0.0)
     
     var level = 3.5 //難易度　どれくらいの速度で流れてくるか
     static var bango = 0//通し番号
+    
+    let matekind:String//マテリアルの種別
+
     init(){
+        
+        
         let random : Int = Int(arc4random() % 4)
         
     
@@ -34,14 +37,19 @@ class Material:  SKSpriteNode{
         switch random {
         case 0 :
             color = UIColor.red
+            self.matekind = "red"
         case 1 :
             color = UIColor.white
+            self.matekind = "white"
         case 2 :
             color = UIColor.green
+            self.matekind = "green"
         case 3 :
             color = UIColor.blue
+            self.matekind = "blue"
         default :
             color = UIColor.blue
+            self.matekind = "blue"
         }
         //画像、色、サイズ、位置、通し番号の設定
         super.init(texture: nil,color: color,size: CGSize(width:20.0,height:80.0))
@@ -68,15 +76,14 @@ class Material:  SKSpriteNode{
     
     
     func moveRight(){
-        
-        let right = SKAction.move(to: CGPoint(x:self.position.x + 100.0 + Material.rightn,y:500.0), duration: 0.1)
+        let right = SKAction.move(to: CGPoint(x:self.position.x + 80.0 + Material.rightn,y:500.0), duration: 0.1)
         Material.rightn += 20.0
         self.run(right)
     }
     
     func moveLeft(){
-        let left = SKAction.move(to: CGPoint(x:self.position.x + -100.0 + Material.leftn,y:500.0), duration: 0.1)
-        Material.leftn -= 20.0
+        let left = SKAction.move(to: CGPoint(x:self.position.x + -140.0 + Material.leftn,y:500.0), duration: 0.1)
+        Material.leftn += 20.0
         self.run(left)
 
         
