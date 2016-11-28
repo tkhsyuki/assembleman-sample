@@ -17,7 +17,7 @@ class GameScene: SKScene {
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
     
-    //trueでタッチ受付、out of index を防止,マテリアルが画面にある時のみtrueになるように
+    //trueでタッチ受付、out of index を防止,マテリアルが画面にある時のみtrueになるように.
     var active = false
     
     //スライド判定に使う
