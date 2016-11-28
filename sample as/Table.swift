@@ -4,11 +4,12 @@ import Foundation
 import SpriteKit
 import UIKit
 
-
+//スコア管理のための配列
 var Right = [String]()
-var rnumber = 0
-
 var Left = [String]()
+
+//格納している数
+var rnumber = 0
 var lnumber = 0
 
 func addRight(color:String){

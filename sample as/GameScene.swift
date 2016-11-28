@@ -16,14 +16,17 @@ class GameScene: SKScene {
     
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
-    var baseNode:SKNode!
+    
+    //trueでタッチ受付、out of index を防止,マテリアルが画面にある時のみtrueになるように。
+    var active = false
+    
     //スライド判定に使う
     var tpos:CGPoint!
-    
     var timer = Timer()
     
-    //処理時に参照する番号
+    //処理時に参照するマテリアル一つ一つに割り振られている番号
     var sbango = 0
+    
     //Materialを格納する配列
     var Mate = [Material]()
     
@@ -31,18 +34,12 @@ class GameScene: SKScene {
     var width :CGFloat? = 0.0
     var height :CGFloat? = 0.0
     
+    //削除のためにsbangoを格納しておく
+    var Rtable = [Int]()
+    var Ltable = [Int]()
 
     
     override func didMove(to view: SKView) {
-        
-     
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
         
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
@@ -63,13 +60,14 @@ class GameScene: SKScene {
         width = self.frame.size.width
         height = self.frame.size.height
         
+        //テーブルの作成
         maketable()
     }
    
     /*マテリアル生成*/
     func create(){
         let mate = Material()
-        //こっちじゃないとフレーム指定できないのでこちらでポジション指定
+        //こっちじゃないとフレーム指定できない?のでこちらでポジション指定
         let framew = self.frame.size.width
         let frameh = self.frame.size.height
         mate.position = CGPoint(x:framew/2,y:frameh*2/3)
@@ -78,6 +76,7 @@ class GameScene: SKScene {
         mate.run(move)
         self.Mate.append(mate)
         self.addChild(mate)
+        active = true
     }
     
     /*スコア増加*/
@@ -140,8 +139,12 @@ class GameScene: SKScene {
             n.strokeColor = SKColor.red
             self.addChild(n)
         }
-        Mate[self.sbango].removeFromParent()
-        self.sbango = self.sbango+1
+        if(active == true){
+            //ただのタッチの場合は一番下にあるマテリアル削除
+            Mate[self.sbango].removeFromParent()
+            self.sbango = self.sbango+1
+            active = false
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -161,65 +164,114 @@ class GameScene: SKScene {
         for t in touches {
                            let epos = t.location(in: self)
                            let hantei = Int(tpos.x)-Int(epos.x)
-            if(hantei>15){
-                /*左にスライドした時の処理*/
-                if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-                    n.position = t.location(in: self)
-                    n.strokeColor = SKColor.white
-                    self.addChild(n)
-                }
-                    //落ちるのをストップし、左の位置へ
-                    Mate[self.sbango].removeAllActions()
-                    Mate[self.sbango].moveLeft()
-                    //左の配列に追加
-                    addLeft(color:Mate[self.sbango].matekind)
-                    self.sbango = self.sbango+1
-                
-            } else if(hantei < -15){
-                /*右にスライドした時の処理*/
-                if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-                    n.position = t.location(in: self)
-                    n.strokeColor = SKColor.white
-                    self.addChild(n)
-                }
-                    //落ちるのをストップし、右の位置へ
-                    Mate[self.sbango].removeAllActions()
-                    Mate[self.sbango].moveRight()
-                    //右の配列に追加
-                    addRight(color:Mate[self.sbango].matekind)
-                    self.sbango = self.sbango+1
-            }else{
-                 self.touchUp(atPoint: t.location(in: self))
-            }
             
+                if(hantei>15){
+                    /*左にスライドした時の処理*/
+                    if let n = self.spinnyNode?.copy() as! SKShapeNode? {
+                        n.position = t.location(in: self)
+                        n.strokeColor = SKColor.white
+                        self.addChild(n)
+                    }
+                    if(active == true){
+                        //落ちるのをストップし、左の位置へ
+                        Mate[self.sbango].removeAllActions()
+                        Mate[self.sbango].moveLeft()
+                        //左の配列に追加
+                        self.Ltable.append(self.sbango)
+                        addLeft(color:Mate[self.sbango].matekind)
+                        self.sbango = self.sbango+1
+                        active = false
+                    }
+                
+                } else if(hantei < -15){
+                    /*右にスライドした時の処理*/
+                    if let n = self.spinnyNode?.copy() as! SKShapeNode? {
+                        n.position = t.location(in: self)
+                        n.strokeColor = SKColor.white
+                        self.addChild(n)
+                    }
+                    if(active == true){
+                        //落ちるのをストップし、右の位置へ
+                        Mate[self.sbango].removeAllActions()
+                        Mate[self.sbango].moveRight()
+                        //右側のそれぞれの配列に追加
+                        self.Rtable.append(self.sbango)
+                        addRight(color:Mate[self.sbango].matekind)
+                        self.sbango = self.sbango+1
+                        active = false
+                    }
+                
+                }else{
+                    self.touchUp(atPoint: t.location(in: self))
+            }
         }
+        
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     /*ここまでタッチ処理*/
-    
-    func getwidth()->CGFloat{
-        return self.width!
-    }
-    
-    func getheight()->CGFloat{
-        return self.height!
-    }
-    //FPS実行される
+
+    //毎フレーム実行される
     override func update(_ currentTime: TimeInterval) {
         if rnumber == 3 {
-            let kuni = judge(LorR:"R") //kuniに組み合わせでできた国の名前を代入
-            addscore(kuni: kuni)
-            rnumber=1
-        
             
+            //kuniに組み合わせでできた国の名前を代入
+            let kuni = judge(LorR:"R")
+            addscore(kuni: kuni)
+            
+            //遅延処理(すぐ消えると違和感があるので)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.tablereset(table:"R")
+            }
+            
+            //右配列に格納している数をリセット
+            rnumber=0
+
         }else if lnumber == 3 {
             let kuni = judge(LorR: "L")
             addscore(kuni: kuni)
-            lnumber=1
-      
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.tablereset(table:"L")
+            }
+            
+            lnumber=0
+            
         }
     }
+    
+    /*テーブルにあるマテリアルをリセット*/
+    func tablereset(table:String){
+        if(table == "R"){
+            for var n1 in 0..<3 {
+                print(n1)
+                removeChildren(in: [Mate[Rtable[n1]]])
+            }
+            //右側テーブルの管理配列初期化
+            Rtable.removeAll()
+            //右側テーブルのスコア管理配列初期化
+            Right.removeAll()
+            
+            //右側テーブルの初期位置リセット
+            Material.rightn = 0.0
+            
+        
+        }else if(table == "L"){
+            for var n2 in 0..<3 {
+                removeChildren(in: [Mate[Ltable[n2]]])
+            }
+        
+            Left.removeAll()
+            Ltable.removeAll()
+            Material.leftn = 0.0
+        }
+    
+    
+    
+    }
+    
+    
+    
 }
