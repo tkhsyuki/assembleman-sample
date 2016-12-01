@@ -66,12 +66,15 @@ class Material:  SKSpriteNode{
     }
     /*マテリアルの状態遷移*/
     func update(){
-            //画面外で消える
+        
             if self.position.y < -self.size.height{
                 self.removeFromParent()
                 self.timer.invalidate()
-                GameScene().sbango = GameScene().sbango+1
-            }
+                
+                print(GameScene().sbango)
+                GameScene().Upsbango()
+                
+        }
     }
     
     

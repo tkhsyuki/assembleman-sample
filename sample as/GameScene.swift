@@ -25,7 +25,7 @@ class GameScene: SKScene {
     var timer = Timer()
     
     //処理時に参照するマテリアル一つ一つに割り振られている番号
-    var sbango = 0
+    var  sbango = 0
     
     //Materialを格納する配列
     var Mate = [Material]()
@@ -71,7 +71,8 @@ class GameScene: SKScene {
         let framew = self.frame.size.width
         let frameh = self.frame.size.height
         mate.position = CGPoint(x:framew/2,y:frameh*2/3)
-        //移動設定
+        
+                //移動設定
         let move = SKAction.moveBy(x: 0, y: -self.size.height, duration: 2)
         mate.run(move)
         self.Mate.append(mate)
@@ -141,8 +142,8 @@ class GameScene: SKScene {
         }
         if(active == true){
             //ただのタッチの場合は一番下にあるマテリアル削除
-            Mate[self.sbango].removeFromParent()
-            self.sbango = self.sbango+1
+            Mate[sbango].removeFromParent()
+            sbango = sbango+1
             active = false
         }
     }
@@ -174,12 +175,12 @@ class GameScene: SKScene {
                     }
                     if(active == true){
                         //落ちるのをストップし、左の位置へ
-                        Mate[self.sbango].removeAllActions()
-                        Mate[self.sbango].moveLeft()
+                        Mate[sbango].removeAllActions()
+                        Mate[sbango].moveLeft()
                         //左の配列に追加
-                        self.Ltable.append(self.sbango)
-                        addLeft(color:Mate[self.sbango].matekind)
-                        self.sbango = self.sbango+1
+                        self.Ltable.append(sbango)
+                        addLeft(color:Mate[sbango].matekind)
+                        sbango = sbango+1
                         active = false
                     }
                 
@@ -192,12 +193,12 @@ class GameScene: SKScene {
                     }
                     if(active == true){
                         //落ちるのをストップし、右の位置へ
-                        Mate[self.sbango].removeAllActions()
-                        Mate[self.sbango].moveRight()
+                        Mate[sbango].removeAllActions()
+                        Mate[sbango].moveRight()
                         //右側のそれぞれの配列に追加
-                        self.Rtable.append(self.sbango)
-                        addRight(color:Mate[self.sbango].matekind)
-                        self.sbango = self.sbango+1
+                        self.Rtable.append(sbango)
+                        addRight(color:Mate[sbango].matekind)
+                        sbango = sbango+1
                         active = false
                     }
                 
@@ -215,6 +216,8 @@ class GameScene: SKScene {
 
     //毎フレーム実行される
     override func update(_ currentTime: TimeInterval) {
+      
+
         if rnumber == 3 {
             
             //kuniに組み合わせでできた国の名前を代入
@@ -238,7 +241,6 @@ class GameScene: SKScene {
             }
             
             lnumber=0
-            
         }
     }
     
@@ -267,9 +269,12 @@ class GameScene: SKScene {
             Ltable.removeAll()
             Material.leftn = 0.0
         }
+    }
     
-    
-    
+    func Upsbango(){
+        print("**")
+        self.sbango = self.sbango+1
+        print(self.sbango)
     }
     
     
