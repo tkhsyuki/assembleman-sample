@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2903193B1DFD06FC00BCEB42 /* RightTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2903193A1DFD06FC00BCEB42 /* RightTable.swift */; };
+		2903193D1DFD23B800BCEB42 /* LeftTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2903193C1DFD23B800BCEB42 /* LeftTable.swift */; };
 		293E2B761DE570450081F621 /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293E2B751DE570450081F621 /* Material.swift */; };
 		29409B021DE43B00000A49B4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29409B011DE43B00000A49B4 /* AppDelegate.swift */; };
 		29409B041DE43B00000A49B4 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 29409B031DE43B00000A49B4 /* GameScene.sks */; };
@@ -18,7 +20,6 @@
 		29409B121DE43B00000A49B4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29409B101DE43B00000A49B4 /* LaunchScreen.storyboard */; };
 		29409B1D1DE43B00000A49B4 /* sample_asTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29409B1C1DE43B00000A49B4 /* sample_asTests.swift */; };
 		29409B281DE43B00000A49B4 /* sample_asUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29409B271DE43B00000A49B4 /* sample_asUITests.swift */; };
-		29DE01E31DE97160004FBFEC /* Table.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DE01E21DE97160004FBFEC /* Table.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2903193A1DFD06FC00BCEB42 /* RightTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RightTable.swift; sourceTree = "<group>"; };
+		2903193C1DFD23B800BCEB42 /* LeftTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftTable.swift; sourceTree = "<group>"; };
 		293E2B751DE570450081F621 /* Material.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		29409AFE1DE43B00000A49B4 /* sample as.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sample as.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29409B011DE43B00000A49B4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -56,7 +59,6 @@
 		29409B231DE43B00000A49B4 /* sample asUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "sample asUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29409B271DE43B00000A49B4 /* sample_asUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sample_asUITests.swift; sourceTree = "<group>"; };
 		29409B291DE43B00000A49B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		29DE01E21DE97160004FBFEC /* Table.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Table.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +113,8 @@
 				29409B031DE43B00000A49B4 /* GameScene.sks */,
 				29409B051DE43B00000A49B4 /* Actions.sks */,
 				29409B071DE43B00000A49B4 /* GameScene.swift */,
-				29DE01E21DE97160004FBFEC /* Table.swift */,
+				2903193A1DFD06FC00BCEB42 /* RightTable.swift */,
+				2903193C1DFD23B800BCEB42 /* LeftTable.swift */,
 				293E2B751DE570450081F621 /* Material.swift */,
 				29409B091DE43B00000A49B4 /* GameViewController.swift */,
 				29409B0B1DE43B00000A49B4 /* Main.storyboard */,
@@ -280,10 +283,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				293E2B761DE570450081F621 /* Material.swift in Sources */,
-				29DE01E31DE97160004FBFEC /* Table.swift in Sources */,
 				29409B081DE43B00000A49B4 /* GameScene.swift in Sources */,
+				2903193D1DFD23B800BCEB42 /* LeftTable.swift in Sources */,
 				29409B0A1DE43B00000A49B4 /* GameViewController.swift in Sources */,
 				29409B021DE43B00000A49B4 /* AppDelegate.swift in Sources */,
+				2903193B1DFD06FC00BCEB42 /* RightTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

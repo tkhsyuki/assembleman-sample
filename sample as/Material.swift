@@ -17,11 +17,6 @@ class Material:  SKSpriteNode{
     
     var timer = Timer()
     
-    //マテリアルのズレ保持
-    static var rightn = CGFloat(0.0)
-    static var leftn = CGFloat(0.0)
-    
-    var level = 3.5 //難易度　どれくらいの速度で流れてくるか
     static var bango = 0//通し番号
     
     let matekind:String//マテリアルの種別
@@ -70,32 +65,12 @@ class Material:  SKSpriteNode{
             if self.position.y < -self.size.height{
                 self.removeFromParent()
                 self.timer.invalidate()
-                
-                print(GameScene().sbango)
-                GameScene().Upsbango()
+
                 
         }
     }
     
-    
-    func moveRight(){
-        let right = SKAction.move(to: CGPoint(x:self.position.x + 80.0 + Material.rightn,y:500.0), duration: 0.1)
-        Material.rightn += 20.0
-        self.run(right)
-    }
-    
-    func moveLeft(){
-        let left = SKAction.move(to: CGPoint(x:self.position.x + -140.0 + Material.leftn,y:500.0), duration: 0.1)
-        Material.leftn += 20.0
-        self.run(left)
+      }
 
-        
-    }
-    
-    /*通し番号の取得*/
-    func Getbango()->Int{
-        let a = Material.bango
-        return a
-    }
 
-}
+

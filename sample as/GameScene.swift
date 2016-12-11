@@ -13,47 +13,34 @@ import UIKit
 class GameScene: SKScene {
     
     
+    let Rtable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    //マテリアルのズレ保持
+    static var rightn = CGFloat(0.0)
+    static var leftn = CGFloat(0.0)
     
-    //trueでタッチ受付、out of index を防止,マテリアルが画面にある時のみtrueになるように.
-    var active = false
+    //格納している数
+    var rnumber = 0
+    var lnumber = 0
     
-    //スライド判定に使う
+    
+    //タッチ開始座標
     var tpos:CGPoint!
+    
+    //タイマー使う際のおまじない
     var timer = Timer()
-    
-    //処理時に参照するマテリアル一つ一つに割り振られている番号
-    var  sbango = 0
-    
-    //Materialを格納する配列
-    var Mate = [Material]()
+
     
     //frameのサイズ簡略のため
     var width :CGFloat? = 0.0
     var height :CGFloat? = 0.0
     
-    //削除のためにsbangoを格納しておく
-    var Rtable = [Int]()
-    var Ltable = [Int]()
-    
+    //score
     var score = 0
 
     
     override func didMove(to view: SKView) {
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(M_PI), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-            
-                   }
+ 
     
         //マテリアル生成タイマー
         self.timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
@@ -72,17 +59,16 @@ class GameScene: SKScene {
     /*マテリアル生成*/
     func create(){
         let mate = Material()
+        
         //こっちじゃないとフレーム指定できない?のでこちらでポジション指定
         let framew = self.frame.size.width
         let frameh = self.frame.size.height
         mate.position = CGPoint(x:framew/2,y:frameh*2/3)
-        
+        mate.name = mate.matekind
         //移動設定
-        let move = SKAction.moveBy(x: 0, y: -self.size.height, duration: 2)
+        let move = SKAction.moveBy(x: 0, y: -self.size.height, duration: 4)
         mate.run(move)
-        self.Mate.append(mate)
         self.addChild(mate)
-        active = true
     }
     
     /*スコア増加*/
@@ -116,7 +102,7 @@ class GameScene: SKScene {
     /*テーブル作成*/
     func maketable(){
         // 青い四角形を作る.
-        let Rtable = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
+        //Rtable = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
         // 線の色を青色に指定.
         Rtable.strokeColor = UIColor.blue
         // 線の太さを2.0に指定.
@@ -138,40 +124,24 @@ class GameScene: SKScene {
   
     /*タッチ処理*/
     func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
+     
     }
     
     func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
+  
     }
     
     func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-        if(active == true){
-            //ただのタッチの場合は一番下にあるマテリアル削除
-            Mate[sbango].removeFromParent()
-            sbango = sbango+1
-            active = false
-        }
+        var node = self.atPoint(pos)
+            //ただのタッチのマテリアル削除
+            node.removeFromParent()
+        
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        for t in touches { self.touchDown(atPoint: t.location(in: self))
+        
+              for t in touches { self.touchDown(atPoint: t.location(in: self))
                            tpos = t.location(in: self)
         }
     }
@@ -182,45 +152,46 @@ class GameScene: SKScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-                           let epos = t.location(in: self)
-                           let hantei = Int(tpos.x)-Int(epos.x)
+                let epos = t.location(in: self)
+                //タッチした場所ータッチし終わった場所で判定
+                let hantei = Int(tpos.x)-Int(epos.x)
             
+                //タッチした座標にいたマテリアルを処理対象　nodeに代入
+                let node = self.atPoint(CGPoint(x:tpos.x,y:epos.y))
+        
+                /*右にスライドした時の処理*/
                 if(hantei>15){
-                    /*左にスライドした時の処理*/
-                    if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-                        n.position = t.location(in: self)
-                        n.strokeColor = SKColor.white
-                        self.addChild(n)
-                    }
-                    if(active == true){
-                        //落ちるのをストップし、左の位置へ
-                        Mate[sbango].removeAllActions()
-                        Mate[sbango].moveLeft()
-                        //左の配列に追加
-                        self.Ltable.append(sbango)
-                        addLeft(color:Mate[sbango].matekind)
-                        sbango = sbango+1
-                        active = false
-                    }
-                
+                    print("左")
+                    //落ちるのストップ
+                    node.removeAllActions()
+                    
+                    //LeftTableに入れる
+                    LeftTable().addLeftTable(color:node.name!, number: lnumber)
+                    //左tableへ移動
+                    let left = SKAction.move(to: CGPoint(x:width!/2 - 120 + GameScene.leftn,y:500.0),duration: 0.1)
+                    GameScene.leftn += 20.0
+                    lnumber += 1
+                    node.run(left)
+                        
+                /*右にスライドした時の処理*/
                 } else if(hantei < -15){
-                    /*右にスライドした時の処理*/
-                    if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-                        n.position = t.location(in: self)
-                        n.strokeColor = SKColor.white
-                        self.addChild(n)
+                    print("右")
+                    node.removeAllActions()
+                    //RighttTableに入れる
+                    if let color = node.name {
+                    RightTable().addRightTable(color:color, number: rnumber)
+                    let right = SKAction.move(to: CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0), duration: 0.1)
+                    
+                    let newnode = SKSpriteNode(texture:nil)
+                    
+                    newnode.color = UIColor(ciColor:(whatColor(color: color)))
+                    newnode.position = CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0)
+                    Rtable.addChild(newnode)
+                    
+                    GameScene.rightn += 20.0
+                    node.run(right)
                     }
-                    if(active == true){
-                        //落ちるのをストップし、右の位置へ
-                        Mate[sbango].removeAllActions()
-                        Mate[sbango].moveRight()
-                        //右側のそれぞれの配列に追加
-                        self.Rtable.append(sbango)
-                        addRight(color:Mate[sbango].matekind)
-                        sbango = sbango+1
-                        active = false
-                    }
-                
+                    
                 }else{
                     self.touchUp(atPoint: t.location(in: self))
             }
@@ -233,14 +204,14 @@ class GameScene: SKScene {
     }
     /*ここまでタッチ処理*/
 
+    
     //毎フレーム実行される
     override func update(_ currentTime: TimeInterval) {
       
-
         if rnumber == 3 {
             
             //kuniに組み合わせでできた国の名前を代入
-            let kuni = judge(LorR:"R")
+            let kuni = RightTable().Rcheck()
             addscore(kuni: kuni)
             
             //遅延処理(すぐ消えると違和感があるので)
@@ -252,7 +223,7 @@ class GameScene: SKScene {
             rnumber=0
 
         }else if lnumber == 3 {
-            let kuni = judge(LorR: "L")
+            let kuni = LeftTable().Lcheck()
             addscore(kuni: kuni)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -263,38 +234,39 @@ class GameScene: SKScene {
         }
     }
     
+    
     /*テーブルにあるマテリアルをリセット*/
     func tablereset(table:String){
         if(table == "R"){
-            for var n1 in 0..<3 {
-                print(n1)
-                removeChildren(in: [Mate[Rtable[n1]]])
-            }
-            //右側テーブルの管理配列初期化
-            Rtable.removeAll()
-            //右側テーブルのスコア管理配列初期化
-            Right.removeAll()
             
+            //右側テーブルリセット
+            RightTable().Rreset()
             //右側テーブルの初期位置リセット
-            Material.rightn = 0.0
+            GameScene.rightn = 0.0
+            Rtable.removeAllChildren()
             
         
         }else if(table == "L"){
-            for var n2 in 0..<3 {
-                removeChildren(in: [Mate[Ltable[n2]]])
-            }
-        
-            Left.removeAll()
-            Ltable.removeAll()
-            Material.leftn = 0.0
+            LeftTable().Lreset()
+            GameScene.leftn = 0.0
         }
     }
     
-    func Upsbango(){
-        print("**")
-        self.sbango = self.sbango+1
-        print(self.sbango)
+    func whatColor(color:String)->CIColor{
+        var iro = CIColor.clear()
+        switch color{
+        case "red":   iro = CIColor.red()
+        case "blue":  iro = CIColor.blue()
+        case "green": iro = CIColor.green()
+        case "white": iro = CIColor.white()
+        default:break
+        
+        }
+        return iro
+    
     }
+    
+ 
     
     
     
