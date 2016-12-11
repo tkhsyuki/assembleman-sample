@@ -33,15 +33,19 @@ func judge(LorR:String)->String{
             
             if Right[0] == "blue" && Right[2] == "red"{
                 ans = "フランス"
+                addScore()
             }else if Right[0] == "green" {
                 if Right[2] == "red" {
                     ans = "イタリア"
+                    addScore()
                 }else if Right[2] == "green"{
                     ans = "ナイジェリア"
+                    addScore()
                 }
             
             }else if Right[0] == "red" && Right[2] == "red"{
                     ans = "ペルー"
+                    addScore()
             }
         }else{
             ans = "buta"
@@ -52,15 +56,19 @@ func judge(LorR:String)->String{
         if Left[1] == "white"{
             if Left[0] == "blue" && Left[2] == "red"{
                 ans = "フランス"
+                addScore()
             }else if Left[0] == "green" {
                 if Left[2] == "red" {
                     ans = "イタリア"
+                    addScore()
                 }else if Left[2] == "green"{
                     ans = "ナイジェリア"
+                    addScore()
                 }
                 
             }else if Left[0] == "red" && Left[2] == "red"{
                 ans = "ペルー"
+                addScore()
             }
         }else{
             ans = "buta"
@@ -70,3 +78,9 @@ func judge(LorR:String)->String{
     }
     return ans
 }
+
+func addScore(){
+    GameScene().score += 8
+}
+
+

@@ -37,6 +37,8 @@ class GameScene: SKScene {
     //削除のためにsbangoを格納しておく
     var Rtable = [Int]()
     var Ltable = [Int]()
+    
+    var score = 0
 
     
     override func didMove(to view: SKView) {
@@ -50,7 +52,8 @@ class GameScene: SKScene {
             spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
                                               SKAction.fadeOut(withDuration: 0.5),
                                               SKAction.removeFromParent()]))
-        }
+            
+                   }
     
         //マテリアル生成タイマー
         self.timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
@@ -62,6 +65,8 @@ class GameScene: SKScene {
         
         //テーブルの作成
         maketable()
+        
+       
     }
    
     /*マテリアル生成*/
@@ -72,7 +77,7 @@ class GameScene: SKScene {
         let frameh = self.frame.size.height
         mate.position = CGPoint(x:framew/2,y:frameh*2/3)
         
-                //移動設定
+        //移動設定
         let move = SKAction.moveBy(x: 0, y: -self.size.height, duration: 2)
         mate.run(move)
         self.Mate.append(mate)
@@ -92,6 +97,20 @@ class GameScene: SKScene {
         Kind.run(fade)
         addChild(Kind)
         
+        setupScoreLabel()
+        
+    }
+    
+    /*スコアLabel*/
+    func setupScoreLabel(){
+        
+        let scoreLabel = SKLabelNode(text:"\(score)")
+        scoreLabel.position = CGPoint(x:self.width!/2,y:self.height!/2)
+        score += 8
+        addChild(scoreLabel)
+
+    
+    
     }
     
     /*テーブル作成*/
