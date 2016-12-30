@@ -26,7 +26,7 @@ class Material:  SKSpriteNode{
         
         let random : Int = Int(arc4random() % 4)
         
-    
+        var RorL:String?
         var color : UIColor!
         
         switch random {

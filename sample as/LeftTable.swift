@@ -62,26 +62,26 @@ class LeftTable{
     
     /*左配列の判定、どの国でもない場合はブタ*/
     func Lcheck()->String{
+        var kuni = "ブタ"
         if(red0 == true && white1 == true && blue2 == true ){
-            self.Lreset()
-            return "フランス"
+           
+            kuni = "フランス"
             
         }else if(red0 == true && white1 == true && red2 == true){
-            self.Lreset()
-            return "ペルー"
+        
+            kuni = "ペルー"
             
         }else if(red0 == true && white1 == true && green2 == true){
-            self.Lreset()
-            return "イタリア"
+            
+            kuni = "イタリア"
             
         }else if(green0 == true && white1 == true && green2 == true){
-            self.Lreset()
-            return "ナイジェリア"
             
-        }else{
-            self.Lreset()
-            return "ブタ"
+            kuni = "ナイジェリア"
         }
+      
+         self.Lreset()
+         return kuni
         
         
     }

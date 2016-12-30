@@ -4,8 +4,10 @@
 //
 //  Created by takahashi yuki on 2016/11/22.
 //  Copyright © 2016年 takahashi yuki. All rights reserved.
-//
-
+/*
+マテリアルをテーブルに移動して、から削除、テーブルにスプライトを生成
+ 削除方法
+*/
 import SpriteKit
 import GameplayKit
 import UIKit
@@ -14,7 +16,16 @@ class GameScene: SKScene {
     
     
     let Rtable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
+    let Ltable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
     
+    var baseNode:SKSpriteNode!
+    
+    //削除の為に管理させる配列
+    var rightTable = [Int: SKSpriteNode]()
+    var leftTable = [Int: SKSpriteNode]()
+    //テーブルに配列するので
+    var rightnode:SKSpriteNode!
+    var leftnode:SKSpriteNode!
     //マテリアルのズレ保持
     static var rightn = CGFloat(0.0)
     static var leftn = CGFloat(0.0)
@@ -40,15 +51,22 @@ class GameScene: SKScene {
 
     
     override func didMove(to view: SKView) {
+        
+        //フレームの大きさ設定
+        width = self.frame.size.width
+        height = self.frame.size.height
+        
+        baseNode = SKSpriteNode(imageNamed: "shooter-background")
+        baseNode.position = CGPoint(x: width!*0.5, y: height!*0.5)
+        baseNode.size = self.size
+        self.addChild(baseNode)
  
     
         //マテリアル生成タイマー
         self.timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
         print(self.frame.size.width)
         
-        //フレームの大きさ設定
-        width = self.frame.size.width
-        height = self.frame.size.height
+        
         
         //テーブルの作成
         maketable()
@@ -90,10 +108,11 @@ class GameScene: SKScene {
     /*スコアLabel*/
     func setupScoreLabel(){
         
-        let scoreLabel = SKLabelNode(text:"\(score)")
+        var scoreLabel = SKLabelNode(text:"\(score)")
         scoreLabel.position = CGPoint(x:self.width!/2,y:self.height!/2)
         score += 8
         addChild(scoreLabel)
+        //scoreLabel = self.scoreLabel
 
     
     
@@ -102,7 +121,6 @@ class GameScene: SKScene {
     /*テーブル作成*/
     func maketable(){
         // 青い四角形を作る.
-        //Rtable = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
         // 線の色を青色に指定.
         Rtable.strokeColor = UIColor.blue
         // 線の太さを2.0に指定.
@@ -110,14 +128,15 @@ class GameScene: SKScene {
         // 四角形の枠組みの剛体を作る.
         Rtable.physicsBody = SKPhysicsBody(edgeLoopFrom: Rtable.frame)
         Rtable.position = CGPoint(x:self.width!/2 + 100,y:500)
-        addChild(Rtable)
+        Rtable.alpha = 0.8
+        baseNode.addChild(Rtable)
         
-        let Ltable = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
+        //let Ltable = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
         Ltable.strokeColor = UIColor.blue
         Ltable.lineWidth = 2.0
         Ltable.physicsBody = SKPhysicsBody(edgeLoopFrom: Ltable.frame)
         Ltable.position = CGPoint(x:self.width!/2 - 100,y:500)
-        addChild(Ltable)
+        baseNode.addChild(Ltable)
 
     
     }
@@ -133,7 +152,7 @@ class GameScene: SKScene {
     
     func touchUp(atPoint pos : CGPoint) {
         var node = self.atPoint(pos)
-            //ただのタッチのマテリアル削除
+            //ただのタッチ,マテリアル削除
             node.removeFromParent()
         
         
@@ -159,37 +178,43 @@ class GameScene: SKScene {
                 //タッチした座標にいたマテリアルを処理対象　nodeに代入
                 let node = self.atPoint(CGPoint(x:tpos.x,y:epos.y))
         
-                /*右にスライドした時の処理*/
+                /*左にスライドした時の処理*/
                 if(hantei>15){
                     print("左")
                     //落ちるのストップ
                     node.removeAllActions()
                     
                     //LeftTableに入れる
-                    LeftTable().addLeftTable(color:node.name!, number: lnumber)
+                    if let color = node.name {
+                    print(color)
+                    print("lnumber:\(lnumber)")
+                        
+                    LeftTable().addLeftTable(color:color, number: lnumber)
                     //左tableへ移動
-                    let left = SKAction.move(to: CGPoint(x:width!/2 - 120 + GameScene.leftn,y:500.0),duration: 0.1)
-                    GameScene.leftn += 20.0
+                    let leftmove = SKAction.move(to: CGPoint(x:width!/2 - 80 + GameScene.leftn,y:500.0),duration: 0.1)
+                    let FadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+                    let sequenceAction = SKAction.sequence([leftmove,FadeOutAction])
+                    updateLeft(color:color)
+                    print(lnumber)
+                    GameScene.leftn -= 20.0
                     lnumber += 1
-                    node.run(left)
+                    node.run(sequenceAction)
+                    }
                         
                 /*右にスライドした時の処理*/
                 } else if(hantei < -15){
-                    print("右")
                     node.removeAllActions()
                     //RighttTableに入れる
                     if let color = node.name {
+                    
                     RightTable().addRightTable(color:color, number: rnumber)
-                    let right = SKAction.move(to: CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0), duration: 0.1)
-                    
-                    let newnode = SKSpriteNode(texture:nil)
-                    
-                    newnode.color = UIColor(ciColor:(whatColor(color: color)))
-                    newnode.position = CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0)
-                    Rtable.addChild(newnode)
-                    
+                    let rightmove = SKAction.move(to: CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0), duration: 0.1)
+                    let FadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+                    let sequenceAction = SKAction.sequence([rightmove,FadeOutAction])
+                    updateRight(color:color)
+                    rnumber += 1
                     GameScene.rightn += 20.0
-                    node.run(right)
+                    node.run(sequenceAction)
                     }
                     
                 }else{
@@ -222,14 +247,15 @@ class GameScene: SKScene {
             //右配列に格納している数をリセット
             rnumber=0
 
-        }else if lnumber == 3 {
+        }
+        
+        if lnumber == 3 {
             let kuni = LeftTable().Lcheck()
             addscore(kuni: kuni)
-            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.tablereset(table:"L")
             }
-            
+
             lnumber=0
         }
     }
@@ -243,12 +269,22 @@ class GameScene: SKScene {
             RightTable().Rreset()
             //右側テーブルの初期位置リセット
             GameScene.rightn = 0.0
-            Rtable.removeAllChildren()
-            
+            for i in 0...2 {
+                if let removenode = self.rightTable[i]{
+                    removenode.removeFromParent()
+                    self.rightTable.removeValue(forKey: i)
+                }
+            }
         
         }else if(table == "L"){
             LeftTable().Lreset()
             GameScene.leftn = 0.0
+            for i in 0...2 {
+                if let removenode = self.leftTable[i]{
+                    removenode.removeFromParent()
+                    self.leftTable.removeValue(forKey: i)
+                }
+            }
         }
     }
     
@@ -263,8 +299,28 @@ class GameScene: SKScene {
         
         }
         return iro
-    
     }
+    
+    func updateRight(color:String){
+        let rightnode = SKSpriteNode()
+        rightnode.name = "right"
+        rightnode.size = CGSize(width:20.0,height:80.0)
+        rightnode.color = UIColor(ciColor:(whatColor(color: color)))
+        rightnode.position = CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0)
+        self.rightTable[rnumber] = rightnode
+        self.addChild(rightnode)
+    }
+    
+    func updateLeft(color:String){
+        let leftnode = SKSpriteNode()
+        leftnode.name = "left"
+        leftnode.size = CGSize(width:20.0,height:80.0)
+        leftnode.color = UIColor(ciColor:(whatColor(color: color)))
+        leftnode.position = CGPoint(x:width!/2 - 80 + GameScene.leftn,y:500.0)
+        self.leftTable[lnumber] = leftnode
+        self.addChild(leftnode)
+    }
+
     
  
     
