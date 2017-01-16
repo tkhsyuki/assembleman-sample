@@ -47,8 +47,8 @@ class Material:  SKSpriteNode{
             self.matekind = "blue"
         }
         //画像、色、サイズ、位置、通し番号の設定
-        super.init(texture: nil,color: color,size: CGSize(width:20.0,height:80.0))
-        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width:80, height:20))
+        super.init(texture: nil,color: color,size: CGSize(width:40.0,height:80.0))
+        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width:200, height:200))
         self.zPosition = 2
         self.physicsBody?.isDynamic=false
         Material.bango = Material.bango+1

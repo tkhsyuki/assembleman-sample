@@ -5,15 +5,15 @@
 //  Created by takahashi yuki on 2016/11/22.
 //  Copyright © 2016年 takahashi yuki. All rights reserved.
 /*
-マテリアルをテーブルに移動して、から削除、テーブルにスプライトを生成
+ マテリアルをテーブルに移動して、から削除、テーブルにスプライトを生成
  やること
-    スコアの管理、背景をタッチしても消えないように,タイトルシーンの作成
-*/
+ スコアの管理、背景をタッチしても消えないように,タイトルシーンの作成
+ */
 import SpriteKit
 import GameplayKit
 import UIKit
 
-class GameScene: SKScene {
+class BurgerScene: SKScene {
     
     
     let Rtable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
@@ -46,7 +46,7 @@ class GameScene: SKScene {
     
     //タイマー使う際のおまじない
     var timer = Timer()
-
+    
     
     //frameのサイズ簡略のため
     var width :CGFloat? = 0.0
@@ -54,14 +54,9 @@ class GameScene: SKScene {
     
     //score
     var score = 30
-
+    
     
     override func didMove(to view: SKView) {
-        
-        //BGM
-        let sound = SKAction.playSoundFileNamed("5629.mp3", waitForCompletion:true)
-        let repeatForever = SKAction.repeatForever(sound)
-        self.run(repeatForever)
         
         //フレームの大きさ設定
         width = self.frame.size.width
@@ -69,11 +64,11 @@ class GameScene: SKScene {
         
         //背景
         /*baseNode = SKSpriteNode(imageNamed: "shooter-background")
-        baseNode.position = CGPoint(x: width!*0.5, y: height!*0.5)
-        baseNode.size = self.size
-        self.addChild(baseNode)
-        */
-    
+         baseNode.position = CGPoint(x: width!*0.5, y: height!*0.5)
+         baseNode.size = self.size
+         self.addChild(baseNode)
+         */
+        
         //マテリアル生成タイマー
         self.timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
         print(self.frame.size.width)
@@ -93,12 +88,12 @@ class GameScene: SKScene {
         scoreLabel.zPosition = 1
         self.addChild(scoreLabel)
         self.scoreLabel = scoreLabel
-
-
         
-       
+        
+        
+        
     }
-   
+    
     /*マテリアル生成*/
     func create(){
         let mate = Material()
@@ -143,15 +138,15 @@ class GameScene: SKScene {
         
         
         switch kuni {
-            case "フランス": self.score += 10
-                            pointLabel.text = ("+10pt")
-            case "イタリア":self.score += 8
-                            pointLabel.text = ("+8pt")
-            case "ナイジェリア":self.score += 5
-                            pointLabel.text = ("+5pt")
-            case "ペルー":self.score += 7
-                            pointLabel.text = ("+7pt")
-            default:self.score += 0
+        case "フランス": self.score += 10
+        pointLabel.text = ("+10pt")
+        case "イタリア":self.score += 8
+        pointLabel.text = ("+8pt")
+        case "ナイジェリア":self.score += 5
+        pointLabel.text = ("+5pt")
+        case "ペルー":self.score += 7
+        pointLabel.text = ("+7pt")
+        default:self.score += 0
         }
         
         pointLabel.run(fade)
@@ -178,31 +173,31 @@ class GameScene: SKScene {
         Ltable.physicsBody = SKPhysicsBody(edgeLoopFrom: Ltable.frame)
         Ltable.position = CGPoint(x:self.width!/2 - 100,y:500)
         addChild(Ltable)
-
-    
+        
+        
     }
-  
+    
     /*タッチ処理*/
     func touchDown(atPoint pos : CGPoint) {
-     
+        
     }
     
     func touchMoved(toPoint pos : CGPoint) {
-  
+        
     }
     
     func touchUp(atPoint pos : CGPoint) {
         let node = self.atPoint(pos)
-            //ただのタッチ,マテリアル削除
-            node.removeFromParent()
+        //ただのタッチ,マテリアル削除
+        node.removeFromParent()
         
         
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-              for t in touches { self.touchDown(atPoint: t.location(in: self))
-                           tpos = t.location(in: self)
+        for t in touches { self.touchDown(atPoint: t.location(in: self))
+            tpos = t.location(in: self)
         }
     }
     
@@ -212,28 +207,27 @@ class GameScene: SKScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches {
-                let epos = t.location(in: self)
-                //タッチした場所ータッチし終わった場所で判定
-                let hantei = Int(tpos.x)-Int(epos.x)
+            let epos = t.location(in: self)
+            //タッチした場所ータッチし終わった場所で判定
+            let hantei = Int(tpos.x)-Int(epos.x)
             
-                //タッチした座標にいたマテリアルを処理対象　nodeに代入
-                let node = self.atPoint(CGPoint(x:tpos.x,y:epos.y))
-        
-                /*左にスライドした時の処理*/
-                if(hantei>15){
-                    //落ちるのストップ
-                    node.removeAllActions()
-                    //LeftTableに入れる
-                    if let color = node.name {
+            //タッチした座標にいたマテリアルを処理対象　nodeに代入
+            let node = self.atPoint(CGPoint(x:tpos.x,y:epos.y))
+            
+            /*左にスライドした時の処理*/
+            if(hantei>15){
+                //落ちるのストップ
+                node.removeAllActions()
+                //LeftTableに入れる
+                if let color = node.name {
                     print("lnumber:\(lnumber),color:\(color)")
                     LeftTable().addLeftTable(color:color, number: lnumber)
                     //左tableへ移動、移動後フェードアウト
                     let leftmove = SKAction.move(to: CGPoint(x:width!/2 - 120 + GameScene.leftn,y:500.0),duration: 0.1)
-                    let scaleAction = SKAction.scaleX(by: 0.5, y: 1.0, duration: 0.1)
-                    let FadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+                    let FadeOutAction = SKAction.fadeOut(withDuration: 1.0)
                     // leftmove,FadeOutを順番に実行
-                    let sequenceAction = SKAction.sequence([leftmove,scaleAction,FadeOutAction])
-                        
+                    let sequenceAction = SKAction.sequence([leftmove,FadeOutAction])
+                    
                     //テーブルにマテリアルを配置
                     updateLeft(color:color)
                     
@@ -244,27 +238,26 @@ class GameScene: SKScene {
                     
                     //移動、フェードアウトを実行
                     node.run(sequenceAction)
-                    }
-                        
+                }
+                
                 /*右にスライドした時の処理*/
-                } else if(hantei < -15){
-                    node.removeAllActions()
-                    //RighttTableに入れる
-                    if let color = node.name {
+            } else if(hantei < -15){
+                node.removeAllActions()
+                //RighttTableに入れる
+                if let color = node.name {
                     
                     RightTable().addRightTable(color:color, number: rnumber)
                     let rightmove = SKAction.move(to: CGPoint(x:width!/2 + 80 + GameScene.rightn,y:500.0), duration: 0.1)
-                    let scaleAction = SKAction.scaleX(by: 0.5, y: 1.0, duration: 0.1)
-                    let FadeOutAction = SKAction.fadeOut(withDuration: 0.5)
-                    let sequenceAction = SKAction.sequence([rightmove,scaleAction,FadeOutAction])
+                    let FadeOutAction = SKAction.fadeOut(withDuration: 1.0)
+                    let sequenceAction = SKAction.sequence([rightmove,FadeOutAction])
                     updateRight(color:color)
                     rnumber += 1
                     GameScene.rightn += 20.0
                     node.run(sequenceAction)
-                    }
-                    
-                }else{
-                    self.touchUp(atPoint: t.location(in: self))
+                }
+                
+            }else{
+                self.touchUp(atPoint: t.location(in: self))
             }
         }
         
@@ -274,13 +267,13 @@ class GameScene: SKScene {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     /*ここまでタッチ処理*/
-
+    
     
     //毎フレーム実行される
     override func update(_ currentTime: TimeInterval) {
         
         self.scoreLabel?.text = "\(self.score)"
-      
+        
         if rnumber == 3 {
             
             //kuniに組み合わせでできた国の名前を代入
@@ -294,7 +287,7 @@ class GameScene: SKScene {
             
             //右配列に格納している数をリセット
             rnumber=0
-
+            
         }
         
         if lnumber == 3 {
@@ -303,7 +296,7 @@ class GameScene: SKScene {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.tablereset(table:"L")
             }
-
+            
             lnumber=0
         }
     }
@@ -326,7 +319,7 @@ class GameScene: SKScene {
                 }
             }
             RightTable().Rreset()
-        
+            
         }else if(table == "L"){
             LeftTable().Lreset()
             GameScene.leftn = 0.0
@@ -349,7 +342,7 @@ class GameScene: SKScene {
         case "green": iro = CIColor.green()
         case "white": iro = CIColor.white()
         default:break
-        
+            
         }
         return iro
     }
@@ -373,9 +366,9 @@ class GameScene: SKScene {
         self.leftTable[lnumber] = leftnode
         self.addChild(leftnode)
     }
-
     
- 
+    
+    
     
     
     

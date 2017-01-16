@@ -20,6 +20,9 @@
 		29409B121DE43B00000A49B4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 29409B101DE43B00000A49B4 /* LaunchScreen.storyboard */; };
 		29409B1D1DE43B00000A49B4 /* sample_asTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29409B1C1DE43B00000A49B4 /* sample_asTests.swift */; };
 		29409B281DE43B00000A49B4 /* sample_asUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29409B271DE43B00000A49B4 /* sample_asUITests.swift */; };
+		29DC66801E20E26300A70055 /* BurgerScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DC667F1E20E26300A70055 /* BurgerScene.swift */; };
+		29DC66821E20EB7A00A70055 /* 5629.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 29DC66811E20EB7A00A70055 /* 5629.mp3 */; };
+		29EC573E1E17AB3800DFE504 /* TitleScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29EC573D1E17AB3800DFE504 /* TitleScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +62,9 @@
 		29409B231DE43B00000A49B4 /* sample asUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "sample asUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29409B271DE43B00000A49B4 /* sample_asUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sample_asUITests.swift; sourceTree = "<group>"; };
 		29409B291DE43B00000A49B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29DC667F1E20E26300A70055 /* BurgerScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BurgerScene.swift; sourceTree = "<group>"; };
+		29DC66811E20EB7A00A70055 /* 5629.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = 5629.mp3; path = ../../../5629.mp3; sourceTree = "<group>"; };
+		29EC573D1E17AB3800DFE504 /* TitleScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TitleScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,12 +119,15 @@
 				29409B031DE43B00000A49B4 /* GameScene.sks */,
 				29409B051DE43B00000A49B4 /* Actions.sks */,
 				29409B071DE43B00000A49B4 /* GameScene.swift */,
+				29EC573D1E17AB3800DFE504 /* TitleScene.swift */,
 				2903193A1DFD06FC00BCEB42 /* RightTable.swift */,
 				2903193C1DFD23B800BCEB42 /* LeftTable.swift */,
 				293E2B751DE570450081F621 /* Material.swift */,
 				29409B091DE43B00000A49B4 /* GameViewController.swift */,
+				29DC667F1E20E26300A70055 /* BurgerScene.swift */,
 				29409B0B1DE43B00000A49B4 /* Main.storyboard */,
 				29409B0E1DE43B00000A49B4 /* Assets.xcassets */,
+				29DC66811E20EB7A00A70055 /* 5629.mp3 */,
 				29409B101DE43B00000A49B4 /* LaunchScreen.storyboard */,
 				29409B131DE43B00000A49B4 /* Info.plist */,
 			);
@@ -253,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29DC66821E20EB7A00A70055 /* 5629.mp3 in Resources */,
 				29409B0D1DE43B00000A49B4 /* Main.storyboard in Resources */,
 				29409B041DE43B00000A49B4 /* GameScene.sks in Resources */,
 				29409B0F1DE43B00000A49B4 /* Assets.xcassets in Resources */,
@@ -283,7 +293,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				293E2B761DE570450081F621 /* Material.swift in Sources */,
+				29DC66801E20E26300A70055 /* BurgerScene.swift in Sources */,
 				29409B081DE43B00000A49B4 /* GameScene.swift in Sources */,
+				29EC573E1E17AB3800DFE504 /* TitleScene.swift in Sources */,
 				2903193D1DFD23B800BCEB42 /* LeftTable.swift in Sources */,
 				29409B0A1DE43B00000A49B4 /* GameViewController.swift in Sources */,
 				29409B021DE43B00000A49B4 /* AppDelegate.swift in Sources */,
