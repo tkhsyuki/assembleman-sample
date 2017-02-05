@@ -41,9 +41,7 @@ class RightTable{
                                 default:break
                             }
             case "green": switch number {
-                                case 0:
-                                    
-                                    RightTable.green0 = true
+                                case 0:RightTable.green0 = true
                                 case 1:RightTable.green1 = true
                                 case 2:RightTable.green2 = true
                                 default:break

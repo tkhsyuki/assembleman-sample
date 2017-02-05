@@ -24,7 +24,7 @@ class Material:  SKSpriteNode{
     init(){
         
         
-        let random : Int = Int(arc4random() % 4)
+        let random : Int = Int(arc4random_uniform(5))
         
         var RorL:String?
         var color : UIColor!
@@ -42,13 +42,16 @@ class Material:  SKSpriteNode{
         case 3 :
             color = UIColor.blue
             self.matekind = "blue"
+        case 4 :
+            color = UIColor.white
+            self.matekind = "white"
         default :
             color = UIColor.blue
-            self.matekind = "blue"
+            self.matekind = "white"
         }
         //画像、色、サイズ、位置、通し番号の設定
         super.init(texture: nil,color: color,size: CGSize(width:40.0,height:80.0))
-        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width:200, height:200))
+        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width:300, height:500))
         self.zPosition = 2
         self.physicsBody?.isDynamic=false
         Material.bango = Material.bango+1
@@ -62,9 +65,12 @@ class Material:  SKSpriteNode{
     /*マテリアルの状態遷移*/
     func update(){
         
+        
             if self.position.y < -self.size.height{
                 self.removeFromParent()
                 self.timer.invalidate()
+            let sound = SKAction.playSoundFileNamed("slap1.mp3", waitForCompletion: true)
+            GameScene().run(sound)
 
                 
         }

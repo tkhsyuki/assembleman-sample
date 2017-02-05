@@ -7,7 +7,7 @@
 /*
 マテリアルをテーブルに移動して、から削除、テーブルにスプライトを生成
  やること
-    スコアの管理、背景をタッチしても消えないように,タイトルシーンの作成
+    背景をタッチしても消えないように,ライフ管理、各パーツをクラス化してコードを見やすく
 */
 import SpriteKit
 import GameplayKit
@@ -15,11 +15,14 @@ import UIKit
 
 class GameScene: SKScene {
     
+    let Rtable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:100.0, height:100.0))
+    let Ltable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:100.0, height:100.0))
     
-    let Rtable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
-    let Ltable:SKShapeNode = SKShapeNode(rectOf: CGSize(width:150.0, height:150.0))
+    var slime:SKSpriteNode?
     
-    //var baseNode:SKSpriteNode!
+    // 落下判定用シェイプ
+    var lowestShape:SKShapeNode?
+    var attack1:SKSpriteNode?
     
     //削除の為に管理させる配列
     var rightTable = [Int: SKSpriteNode]()
@@ -38,9 +41,6 @@ class GameScene: SKScene {
     //scoreのラベル
     var scoreLabel:SKLabelNode?
     
-    
-    
-    
     //タッチ開始座標
     var tpos:CGPoint!
     
@@ -54,35 +54,31 @@ class GameScene: SKScene {
     
     //score
     var score = 30
+    
+    //enemylife
+    var enemylife = 100.0
 
+    var progressBar = HpBar()
     
     override func didMove(to view: SKView) {
         
-        //BGM
+        /*BGM
         let sound = SKAction.playSoundFileNamed("5629.mp3", waitForCompletion:true)
         let repeatForever = SKAction.repeatForever(sound)
         self.run(repeatForever)
+        */
         
         //フレームの大きさ設定
         width = self.frame.size.width
         height = self.frame.size.height
         
-        //背景
-        /*baseNode = SKSpriteNode(imageNamed: "shooter-background")
-        baseNode.position = CGPoint(x: width!*0.5, y: height!*0.5)
-        baseNode.size = self.size
-        self.addChild(baseNode)
-        */
-    
         //マテリアル生成タイマー
-        self.timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
-        print(self.frame.size.width)
+       self.timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.create), userInfo: nil, repeats: true)
+        //てきの攻撃タイマー
+        self.timer = Timer.scheduledTimer(timeInterval: 7, target: self, selector: #selector(self.enemyAttack), userInfo: nil, repeats: true)
         
-        
-        
-        //テーブルの作成
-        maketable()
-        
+        //テーブル,ダメージ判定用シェイプの作成
+        makesetup()
         
         //スコアラベルの生成
         let scoreLabel = SKLabelNode(fontNamed: "Helvetica")
@@ -90,12 +86,17 @@ class GameScene: SKScene {
         scoreLabel.fontSize = 32
         scoreLabel.position = CGPoint(x: self.size.width-60, y: 40)
         scoreLabel.fontColor = UIColor.white
-        scoreLabel.zPosition = 1
+        scoreLabel.zPosition = 3
         self.addChild(scoreLabel)
         self.scoreLabel = scoreLabel
 
-
+        //モンスター生成
+        self.slime = SKSpriteNode(imageNamed:"slim")
+        self.slime?.position = CGPoint(x:width!/2,y:height!*6/7+20)
+        self.slime?.size = CGSize(width:100,height:100)
+        self.addChild(slime!)
         
+       self.makebar()
        
     }
    
@@ -103,18 +104,38 @@ class GameScene: SKScene {
     func create(){
         let mate = Material()
         
+        //0~4のランダムな整数生成
+        let rndint = CGFloat(arc4random_uniform(4))
+        
         //こっちじゃないとフレーム指定できない?のでこちらでポジション指定
         let framew = self.frame.size.width
         let frameh = self.frame.size.height
-        mate.position = CGPoint(x:framew/2,y:frameh*2/3)
+        mate.position = CGPoint(x:framew/5*(rndint+1),y:frameh*2/3 - 40.0)
         mate.name = mate.matekind
         //移動設定
         let move = SKAction.moveBy(x: 0, y: -self.size.height, duration: 4)
         mate.run(move)
-        score -= 1
+        //score -= 1
         self.addChild(mate)
     }
     
+    /*barsetup*/
+    func makebar(){
+        // プログレスバーを追加(ダメージ幅)
+        self.addChild(progressBar)
+        progressBar.setProgress(progress: 0.0) // 初期値
+        progressBar.position = CGPoint(x: 30, y: self.frame.height-30)
+        progressBar.zPosition = 20
+        // 背景バーよりレイヤーを前に
+        
+        // プログレスバー(現在HP幅)を追加
+        let backgroundBar = SKSpriteNode(color: UIColor.green, size:CGSize(width:300,height:20))
+        backgroundBar.anchorPoint = CGPoint(x: 0, y: 0)
+        backgroundBar.position = CGPoint(x: 30, y: self.frame.height-30)
+        
+        self.addChild(backgroundBar)
+    }
+        
     /*スコア増加*/
     func addscore(kuni:String){
         //ラベルに国の名前を表示
@@ -128,39 +149,99 @@ class GameScene: SKScene {
         addChild(Kind)
         
         setupScoreLabel(kuni: kuni)
+    }
+    
+    /*敵の攻撃*/
+    func enemyAttack(){
+        let ran2 = DispatchTime(uptimeNanoseconds: UInt64(arc4random_uniform(3)))
+        // 赤色の長方形のShapeNodeを作成.
+        let redRect = SKShapeNode(rectOf:CGSize(width:self.width!,height:self.height!))
+        // 座標を中心に指定(ShapeNodeの中心の座標になる).
+        redRect.position = CGPoint(x:self.width!/2,y:self.height!/2)
+        // 塗りつぶしの色を赤色に指定.
+        redRect.fillColor = UIColor.red
+        //効果音の再生
+        let sound = SKAction.playSoundFileNamed("slap1.mp3", waitForCompletion:true)
+        // 指定した回転値まで拡大させるアクション.
+        let ScaleBigAction = SKAction.scale(to: 3.0, duration: 0.3)
+        // 指定した値まで拡大させるアクション.
+        let ScalebackAction = SKAction.scale(to: 1.0, duration: 0.3)
+        // フェードアウトさせるアクションを作る.
+        let fadeOAction = SKAction.fadeOut(withDuration: 0.3)
+        let fadeIAction = SKAction.fadeIn(withDuration: 0.3)
+        // 同時実行するグループアクションを作る.
+        let group1Action = SKAction.group([ScaleBigAction,fadeOAction])
+        let group2Action = SKAction.group([ScalebackAction,fadeIAction])
+        //逐次実行
+        let sequenceAction = SKAction.sequence([group1Action,sound,group2Action,])
+        //遅延処理(攻撃時間ランダムのため)
+        DispatchQueue.main.asyncAfter(deadline:ran2) {
+            self.slime?.run(sequenceAction)
+            DispatchQueue.main.asyncAfter(deadline:DispatchTime(uptimeNanoseconds: UInt64(3))) {
+                print("Attacked")
+                self.score -= 5
+            }
+
+        }
         
     }
     
-    /*スコアLabel*/
+    
+    /*スコアLabel(ダメージ処理)*/
     func setupScoreLabel(kuni:String){
         
         let pointLabel = SKLabelNode()
+        //ランダムな変数0~4の変数を生成
+        let rndintX = CGFloat(arc4random_uniform(5))
+        let rndintY = CGFloat(arc4random_uniform(5))
         
-        pointLabel.alpha = 0.5
-        pointLabel.fontSize = 40.0
-        pointLabel.position = CGPoint(x:width!/2,y:height!*2/5)
-        let fade = SKAction.fadeOut(withDuration: 1.5)
+        pointLabel.alpha = 1.0
+        pointLabel.fontSize = 50.0
+        pointLabel.fontColor = UIColor.red
+        pointLabel.position = CGPoint(x:width!/2+30 - rndintX*10,y:height!*6/7+50 - rndintY*10)
+        pointLabel.zPosition = 30
+        let fade = SKAction.fadeOut(withDuration: 3.0)
         
+        //Hpバーを減らす量
+        var setDamage = 0.0
+        
+        //サウンド情報保持
+        let damagesound = SKAction.playSoundFileNamed("punch-high1.mp3", waitForCompletion:true)
         
         switch kuni {
-            case "フランス": self.score += 10
-                            pointLabel.text = ("+10pt")
+            case "フランス": self.score += 10//スコア増加
+                            pointLabel.text = ("10")//ダメージ量表示
+                            setDamage = 0.1//バーに与えるダメージを設定
+                            self.run(damagesound)
+            
             case "イタリア":self.score += 8
-                            pointLabel.text = ("+8pt")
+                            pointLabel.text = ("8")
+                            setDamage = 0.08
+                            self.run(damagesound)
+            
             case "ナイジェリア":self.score += 5
-                            pointLabel.text = ("+5pt")
+                            pointLabel.text = ("5")
+                            setDamage = 0.05
+                            self.run(damagesound)
+            
             case "ペルー":self.score += 7
-                            pointLabel.text = ("+7pt")
+                            pointLabel.text = ("7")
+                            setDamage = 0.07
+                            self.run(damagesound)
+            
             default:self.score += 0
         }
+        self.progressBar.updateProgress(progress: CGFloat(setDamage))
+        self.enemylife -= Double(setDamage) * 100.0
+        
         
         pointLabel.run(fade)
         addChild(pointLabel)
         
     }
     
-    /*テーブル作成*/
-    func maketable(){
+    /*テーブル、判定用作成*/
+    func makesetup(){
         // 青い四角形を作る.
         // 線の色を青色に指定.
         Rtable.strokeColor = UIColor.blue
@@ -178,8 +259,7 @@ class GameScene: SKScene {
         Ltable.physicsBody = SKPhysicsBody(edgeLoopFrom: Ltable.frame)
         Ltable.position = CGPoint(x:self.width!/2 - 100,y:500)
         addChild(Ltable)
-
-    
+        
     }
   
     /*タッチ処理*/
@@ -192,9 +272,12 @@ class GameScene: SKScene {
     }
     
     func touchUp(atPoint pos : CGPoint) {
-        let node = self.atPoint(pos)
+        
+        
+            let node = self.atPoint(pos)
             //ただのタッチ,マテリアル削除
             node.removeFromParent()
+            //self.progressBar.updateProgress(progress: 0.01)
         
         
     }
@@ -225,7 +308,6 @@ class GameScene: SKScene {
                     node.removeAllActions()
                     //LeftTableに入れる
                     if let color = node.name {
-                    print("lnumber:\(lnumber),color:\(color)")
                     LeftTable().addLeftTable(color:color, number: lnumber)
                     //左tableへ移動、移動後フェードアウト
                     let leftmove = SKAction.move(to: CGPoint(x:width!/2 - 120 + GameScene.leftn,y:500.0),duration: 0.1)
@@ -236,12 +318,10 @@ class GameScene: SKScene {
                         
                     //テーブルにマテリアルを配置
                     updateLeft(color:color)
-                    
-                    //次に入る位置調整
-                    GameScene.leftn += 20.0
                     //lnumberをインクリメント
                     lnumber += 1
-                    
+                    //次に入る位置調整
+                    GameScene.leftn += 20.0
                     //移動、フェードアウトを実行
                     node.run(sequenceAction)
                     }
@@ -274,12 +354,39 @@ class GameScene: SKScene {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     /*ここまでタッチ処理*/
+    
+    
+
+
 
     
     //毎フレーム実行される
     override func update(_ currentTime: TimeInterval) {
         
         self.scoreLabel?.text = "\(self.score)"
+        
+        if(self.score < 1){
+            
+            // ゲームオーバー画面のシーンを作成する
+            let scene = self.createImageScene(imageName: "gameover.jpeg")
+            // クロスフェードトランジションを適用しながらシーンを移動する
+            let transition = SKTransition.crossFade(withDuration: 1.0)
+            self.view?.presentScene(scene, transition: transition)
+            self.score = 30
+            self.progressBar = HpBar()
+        }
+        
+        if(enemylife < 1){
+            // ゲームクリア画面のシーンを作成する
+            let scene = self.createImageScene(imageName: "gameclear.jpg")
+            // クロスフェードトランジションを適用しながらシーンを移動する
+            let transition = SKTransition.crossFade(withDuration: 1.0)
+            self.view?.presentScene(scene, transition: transition)
+            self.score = 30
+            self.progressBar = HpBar()
+        
+        
+        }
       
         if rnumber == 3 {
             
@@ -373,6 +480,20 @@ class GameScene: SKScene {
         self.leftTable[lnumber] = leftnode
         self.addChild(leftnode)
     }
+    
+    // 一枚絵を表示するシーンを作成するメソッド
+    func createImageScene(imageName: String) -> SKScene {
+        // シーンのサイズはGameSceneに合わせる
+        let scene = TouchScene(size: self.size)
+        // スプライトをシーン中央に貼り付ける
+        let sprite = SKSpriteNode(imageNamed: imageName)
+        sprite.size = scene.size
+        sprite.position = CGPoint(x: scene.size.width * 0.5, y: scene.size.height * 0.5)
+        scene.addChild(sprite)
+        
+        return scene
+    }
+
 
     
  
